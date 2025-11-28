@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-Run YOLOv8 on a video and render glowing, label-free boxes with per-class colors.
-"""
-
 import argparse
 import hashlib
 import os
@@ -12,7 +8,6 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 
-# Designated colors for common traffic classes (BGR).
 CLASS_COLOR_OVERRIDES: Dict[str, Tuple[int, int, int]] = {
     "person": (255, 92, 156),
     "bicycle": (120, 222, 106),
@@ -67,14 +62,12 @@ def parse_args() -> argparse.Namespace:
 
 
 def hsv_to_bgr(h: float, s: float, v: float) -> Tuple[int, int, int]:
-    """Convert HSV values (0-1 floats) to OpenCV BGR tuple."""
     hsv_pixel = np.uint8([[[h * 179, s * 255, v * 255]]])
     bgr_pixel = cv2.cvtColor(hsv_pixel, cv2.COLOR_HSV2BGR)[0][0]
     return int(bgr_pixel[0]), int(bgr_pixel[1]), int(bgr_pixel[2])
 
 
 def color_for_class(name: str) -> Tuple[int, int, int]:
-    """Return a pleasant, deterministic color for a class name."""
     if name in CLASS_COLOR_OVERRIDES:
         return CLASS_COLOR_OVERRIDES[name]
 
@@ -90,7 +83,6 @@ def draw_glowing_box(
     glow_radius: int,
     line_thickness: int,
 ) -> None:
-    """Draw a blurred glow plus a crisp outline for a single box."""
     x1, y1, x2, y2 = map(int, xyxy)
     glow_layer = np.zeros_like(frame)
     glow_thickness = max(glow_radius * 2, line_thickness + 2)
